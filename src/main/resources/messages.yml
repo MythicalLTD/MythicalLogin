@@ -1,0 +1,103 @@
+# This file is used to store messages that are used in the plugin.
+# You can use the prefix and colors from the config.yml file.
+# You can also use the '&' symbol to color the text.
+#
+# You can also use the following placeholders:
+
+# {prefix} - The prefix of the plugin
+#  - The main color of the plugin
+#  - The secondary color of the plugin
+#  - The text color of the plugin
+
+# You can also use the following placeholders:
+
+# {discord_url} - The url of the discord server
+
+Global:
+  Prefix: "&7[&bMythicalLogin&7] &r"
+  InvalidCommand: "{prefix}Invalid command! Use /pinlogin help to see the available commands!"
+  NoPermission: "{prefix}You don't have permission to use this command!"
+  Reloaded: "{prefix}The MythicalLogin configuration has been reloaded!"
+  ErrorOnJoin: "{prefix}An error occurred while trying to join the server! Please try again later!"
+  ReloadKickReason: "{prefix}The server is reloading! Please join again in a few seconds!"
+
+Help:
+  help: "Show this help message!"
+  reload: "Reload the MythicalLogin configuration!"
+  discordLink: "Get a discord pin to link your discord account!"
+  discordUnlink: "Unlink your discord account from the panel!"
+  discordInvite: "Get an invite to the discord server!"
+
+Discord:
+  Link: "{prefix}If you want to link your discord account please join our discord server and use the command /link {token}"
+  AlreadyLinked: "{prefix}Your discord account is already linked to the panel!"
+  NotLinked: "{prefix}Your discord account is not linked to the panel!"
+  Unlink: "{prefix}Your discord account was unlinked from the panel!"
+  Invite: "{prefix}If you want to join our discord server please use the following link: {discord_url}"
+  LoginRequired:
+    - "{prefix}"
+    - "It looks like you are logging in from a new location!"
+    - "Either login to the panel or join our dm our discord bot"
+    - "with the following text !login {token}"
+    - "to verify your identity and allow this ip to connect!!"
+
+Bot:
+  Commands:
+    Help:
+      Description: "Show this help message!"
+      Embed:
+        Title: "MythicalLogin Help Command"
+        Description: "Here are the available commands for MythicalLogin:"
+
+    Link:
+      Description: "Link your discord account to the panel!"
+      Args:
+        Pin:
+          Name: "pin"
+          Description: "The pin you received from the panel!"
+
+      AlreadyLinked:
+        Title: "Your account is already linked!"
+        Description: "Your discord account is already linked to the panel!"
+
+      Success:
+        Title: "You have been linked your account!"
+        Description: "Your account was successfully linked to the panel!"
+
+      InvalidPin:
+        Title: "Invalid Pin!"
+        Description: "The pin you provided is invalid! Please try again."
+
+    Unlink:
+      Description: "Unlink your discord account from the panel!"
+      Success:
+        Title: "You have been unlinked your account!"
+        Description: "Your account was successfully unlinked from the panel!"
+
+      NotLinked:
+        Title: "Your account is not linked!"
+        Description: "Your discord account is not linked to the panel!"
+
+    Login:
+      NotLinked:
+        Title: "You are not linked to any account!"
+        Description: "You are not linked to any account! Please link your account first!"
+
+      Success:
+        Title: "You have been logged in!"
+        Description: "You have been logged in successfully! You can now join the minecraft server!"
+
+      AnErrorOccurred:
+        Title: "An error occurred!"
+        Description: "An error occurred while trying to log you in! Please try again later!"
+
+      InvalidPin:
+        Title: "Invalid Pin!"
+        Description: "The pin you provided is invalid! Please try again."
+
+      NewRequest:
+        Title: "New login request!"
+        Description: "A new login request has been sent to your discord account! Please check your dm's!"
+        Name: "Name"
+        IP: "IP Address"
+        Date: "Date"

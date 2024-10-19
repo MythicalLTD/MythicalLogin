@@ -1,0 +1,24 @@
+
+Metrics:
+  # Enable or disable metrics
+  Enabled: true
+
+Database:
+  # The host of the database
+  Host: "192.168.0.69"
+  # The port of the database
+  Port: 3306
+  # The name of the database
+  Database: "mythicallogin"
+  # The username of the database
+  Username: "mythicalsystems"
+  # The password of the database
+  Password: "mythicalsystems"
+
+Discord:
+  # Discord Bot Token
+  token: "MTE5MDAzODI2OTMwODY5ODc1NA.GqRI4R.cqpzHk8ABZCMpW9nq3X0CWc2O9lb4F6OsCxdDg"
+  # Discord Guild ID 
+  guild: 1276929020835008603
+  # Discord Invite
+  invite: "https://discord.gg/mythicalsystems"
