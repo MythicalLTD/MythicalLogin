@@ -1,0 +1,5 @@
+name: MythicalLogin
+version: '1.0-SNAPSHOT'
+main: xyz.mythicalsystems.mythicalLogin.MythicalLogin
+author: NaysKutzu
+description: MythicalLogin is a login plugin to link your users discord with minecraft!
