@@ -15,12 +15,12 @@
 
 Global:
   Prefix: "&7[&bMythicalLogin&7] &8|&r "
-  InvalidCommand: "{prefix}Invalid command! Use /pinlogin help to see the available commands!"
-  NoPermission: "{prefix}You don't have permission to use this command!"
-  Reloaded: "{prefix}The MythicalLogin configuration has been reloaded!"
-  ErrorOnJoin: "{prefix}An error occurred while trying to join the server! Please try again later!"
-  ReloadKickReason: "{prefix}The server is reloading! Please join again in a few seconds!"
-  NoPlayer: "{prefix}The player you specified is not online!"
+  InvalidCommand: "{prefix}&7Invalid command! Use &d/pinlogin help&f to see the available commands!"
+  NoPermission: "{prefix}&7You don't have permission to use this command!"
+  Reloaded: "{prefix}&7The MythicalLogin configuration has been reloaded!"
+  ErrorOnJoin: "{prefix}&7An error occurred while trying to join the server! Please try again later!"
+  ReloadKickReason: "{prefix}&7The server is reloading! Please join again in a few seconds!"
+  PlayerNotRegistered: "{prefix}&7That player is not registered in our database!"
 
 Help:
   Title: "&5&lMythicalLogin &7- &dHelp"
@@ -37,22 +37,33 @@ Help:
     forceUnlink: "&7- &d/pinlogin admin forceunlink <player> &7- &fForce unlink a player."
 
 forceLogin: 
-  Success: "{prefix}The player {player} has been logged in!"
-  Error: "{prefix}An error occurred while trying to log in the player {player}!"
-  
+  Success: "{prefix}&7The player has forced been logged in!"
+  Error: "{prefix}&cAn error occurred while trying to perform a focelogin action!"
+  NotLinked: "{prefix}&cThe player has not linked to any account!"
+
+forceLogout:
+  All: "{prefix}&7All players have been logged out!"
+  Success: "{prefix}&7The player has been logged out!"
+  Error: "{prefix}&cAn error occurred while trying to perform a focelogout action!"
+  NotLinked: "{prefix}&cThe player has not linked to any account!"
+
+forceUnlink:
+  Success: "{prefix}&7The player has been unlinked!"
+  Error: "{prefix}&cAn error occurred while trying to perform a forceunlink action!"
+  NotLinked: "{prefix}&cThe player has not linked to any account!"
 
 Discord:
-  Link: "{prefix}If you want to link your discord account please join our discord server and use the command /link {pin}"
-  AlreadyLinked: "{prefix}Your discord account is already linked to a discord account!"
-  NotLinked: "{prefix}Your discord account is not linked!"
-  Unlink: "{prefix}Your discord account was unlinked from minecraft!"
-  Invite: "{prefix}If you want to join our discord server please use the following link: {discord_url}"
+  Link: "{prefix}&7If you want to link your discord account please join our discord server and use the command &d/link {pin}"
+  AlreadyLinked: "{prefix}&7Your discord account is already linked to a discord account!"
+  NotLinked: "{prefix}&7Your discord account is not linked!"
+  Unlink: "{prefix}&7Your discord account was unlinked from minecraft!"
+  Invite: "{prefix}&7If you want to join our discord server please use the following link: &d{discord_url}"
   LoginRequired:
     - "{prefix}"
-    - "It looks like you are logging in from a new location!"
-    - "Either login to the panel or join our dm our discord bot"
-    - "with the following text !login {token}"
-    - "to verify your identity and allow this ip to connect!!"
+    - "&7It looks like you are logging in from a new location!"
+    - "&7Either login to the panel or join our dm our discord bot"
+    - "&7with the following text &d!login {pin}"
+    - "&7to verify your identity and allow this ip to connect!!"
 
 Bot:
   Commands:
@@ -108,9 +119,13 @@ Bot:
         Title: "Invalid Pin!"
         Description: "The pin you provided is invalid! Please try again."
 
+      ForceloginRequest:
+        Title: "A forcelogin action was executed!"
+        Description: "A forcelogin action was performed on your account! This usually means a staff member allowed this connection!"
+
       NewRequest:
         Title: "New login request!"
-        Description: "A new login request has been sent to your discord account! Please check your dm's!"
+        Description: "A new login request has been sent to your discord account! Please check your game for the login code!"
         Name: "Name"
         IP: "IP Address"
         Date: "Date"

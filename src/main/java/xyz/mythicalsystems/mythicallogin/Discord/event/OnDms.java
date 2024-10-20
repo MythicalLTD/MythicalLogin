@@ -1,12 +1,11 @@
 package xyz.mythicalsystems.mythicallogin.Discord.event;
 
-import java.util.UUID;
-
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.listener.message.MessageCreateListener;
 
 import xyz.mythicalsystems.mythicallogin.Messages.Messages;
+import xyz.mythicalsystems.mythicallogin.MySQL.UserDataHandler;
 
 import java.awt.Color;
 
@@ -33,15 +32,14 @@ public class OnDms implements MessageCreateListener {
                 String[] args = message.split(" ");
                 if (args.length == 2) {
                     String pin = args[1];
-                    /**if (Discord.doesPinExist(pin)) {
+                    if (UserDataHandler.doesPinExist(pin)) {
                         try {
-                            String uuid = Discord.getUUIDFromDiscord(user_id);
+                            String uuid = UserDataHandler.getUserInfo(user_id,"discord_pin");
                             if (uuid == null) {
                                 EmbedBuilder embedBuilder = new EmbedBuilder()
                                         .setTitle(getMessage("Bot.Commands.Login.NotLinked.Title"))
                                         .setColor(Color.RED)
-                                        .setDescription(getMessage("Bot.Commands.Login.NotLinked.Description"))
-                                        .setFooter(Bot.copyright);
+                                        .setDescription(getMessage("Bot.Commands.Login.NotLinked.Description"));
 
                                 event.getChannel().sendMessage(embedBuilder).thenAccept(
                                         msg -> {
@@ -49,13 +47,12 @@ public class OnDms implements MessageCreateListener {
                                         });
                                 return;
                             }
-                            Account.updateUser(UUID.fromString(uuid), "blocked", "false");
-                            Discord.removePin(user_id);
+                            UserDataHandler.setUserInfo(user_id, "discord_pin", "None");
+                            UserDataHandler.setUserInfo(user_id, "blocked", "false");
                             EmbedBuilder embedBuilder = new EmbedBuilder()
                                     .setTitle(getMessage("Bot.Commands.Login.Success.Title"))
                                     .setColor(Color.GREEN)
-                                    .setDescription(getMessage("Bot.Commands.Login.Success.Description"))
-                                    .setFooter(Bot.copyright);
+                                    .setDescription(getMessage("Bot.Commands.Login.Success.Description"));
                             event.getChannel().sendMessage(embedBuilder).thenAccept(msg -> {
                                 msg.addReaction("\u2705");
                             });
@@ -63,8 +60,7 @@ public class OnDms implements MessageCreateListener {
                             EmbedBuilder embedBuilder = new EmbedBuilder()
                                     .setTitle(getMessage("Bot.Commands.Login.AnErrorOccurred.Title"))
                                     .setColor(Color.RED)
-                                    .setDescription(getMessage("Bot.Commands.Login.AnErrorOccurred.Description"))
-                                    .setFooter(Bot.copyright);
+                                    .setDescription(getMessage("Bot.Commands.Login.AnErrorOccurred.Description"));
                             event.getChannel().sendMessage(embedBuilder).thenAccept(msg -> {
                                 msg.addReaction("\u274C");
                             });
@@ -73,12 +69,11 @@ public class OnDms implements MessageCreateListener {
                         EmbedBuilder embed = new EmbedBuilder()
                                 .setTitle(getMessage("Bot.Commands.Login.InvalidPin.Title"))
                                 .setColor(Color.RED)
-                                .setDescription(getMessage("Bot.Commands.Login.InvalidPin.Description"))
-                                .setFooter(Bot.copyright);
+                                .setDescription(getMessage("Bot.Commands.Login.InvalidPin.Description"));
                         event.getChannel().sendMessage(embed).thenAccept(msg -> {
                             msg.addReaction("\u274C");
                         });
-                    }**/
+                    }
                 }
             }
         }

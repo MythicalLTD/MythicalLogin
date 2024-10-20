@@ -190,6 +190,41 @@ public class UserDataHandler {
     }
 
     /**
+     * Get user info from the database.
+     * 
+     * @param discord_id The user to get info for.
+     * @param info       The info to get.
+     * 
+     * @return String The value of the info.
+     */
+    public static String getUserInfo(String discord_id, String info) {
+        try {
+            ResultSet result = Main.connection.createStatement()
+                    .executeQuery("SELECT * FROM `" + TABLE_NAME + "` WHERE `discord_id` = '" + discord_id + "'");
+            if (result.next()) {
+                String value = result.getString(info);
+                result.close();
+                if (Main.CONFIG_DEBUG_ENABLED) {
+                    Main.logger.info(UserDataHandler.class.getName(),
+                            "(DEBUG) User " + discord_id + " has requested info: " + info + " = " + value);
+                }
+                return value;
+            } else {
+                result.close();
+                if (Main.CONFIG_DEBUG_ENABLED) {
+                    Main.logger.info(UserDataHandler.class.getName(),
+                            "(DEBUG) User " + discord_id + " has requested info: " + info + " = null");
+                }
+                return null;
+            }
+        } catch (Exception e) {
+            Main.logger.error(UserDataHandler.class.getName(),
+                    "Failed to get user info: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
      * Set user info in the database.
      * 
      * @param player The player to set info for.
@@ -220,6 +255,59 @@ public class UserDataHandler {
     }
 
     /**
+     * Set user info in the database.
+     * 
+     * @param discord_id The user to set info for.
+     * @param info       The info to set.
+     * @param value      The value to set.
+     * 
+     * @return void
+     */
+    public static void setUserInfo(String discord_id, String info, String value) {
+        try {
+            Connection connection = Main.connection;
+            PreparedStatement statement = connection
+                    .prepareStatement("UPDATE `" + TABLE_NAME + "` SET `" + info + "` = ? WHERE `discord_id` = ?");
+            statement.setString(1, value);
+            statement.setString(2, discord_id);
+            statement.execute();
+            statement.close();
+            if (Main.CONFIG_DEBUG_ENABLED) {
+                Main.logger.info(UserDataHandler.class.getName(),
+                        "(DEBUG) User " + discord_id + " has set info: " + info + " = " + value);
+            }
+        } catch (Exception e) {
+            Main.logger.error(UserDataHandler.class.getName(), "Failed to set user info: " + e.getMessage());
+        }
+    }
+    /**
+     * Set user info in the database.
+     * 
+     * @param pin The user to set info for.
+     * @param info The info to set.
+     * @param value The value to set.
+     * 
+     * @return void 
+     */
+    public static void setUserInfo_PIN(String pin, String info, String value) {
+        try {
+            Connection connection = Main.connection;
+            PreparedStatement statement = connection
+                    .prepareStatement("UPDATE `" + TABLE_NAME + "` SET `" + info + "` = ? WHERE `discord_pin` = ?");
+            statement.setString(1, value);
+            statement.setString(2, pin);
+            statement.execute();
+            statement.close();
+            if (Main.CONFIG_DEBUG_ENABLED) {
+                Main.logger.info(UserDataHandler.class.getName(),
+                        "(DEBUG) User " + pin + " has set info: " + info + " = " + value);
+            }
+        } catch (Exception e) {
+            Main.logger.error(UserDataHandler.class.getName(), "Failed to set user info: " + e.getMessage());
+        }
+    }
+
+    /**
      * Check if a user already linked his discord accounts
      * 
      * @param player The player to check.
@@ -233,24 +321,23 @@ public class UserDataHandler {
                         "(DEBUG) User " + player.getName() + " is attempting to check if linked to Discord.");
             }
             String discord_id = getUserInfo(player, "discord_id");
-            if (discord_id == "None") {
-                if (Main.CONFIG_DEBUG_ENABLED) {
-                    Main.logger.info(UserDataHandler.class.getName(),
-                            "(DEBUG) User " + player.getName() + " is not linked to Discord.");
-                }
-                return false;
-            } else {
+            if (!discord_id.equals("None")) {
                 if (Main.CONFIG_DEBUG_ENABLED) {
                     Main.logger.info(UserDataHandler.class.getName(),
                             "(DEBUG) User " + player.getName() + " is linked to Discord.");
                 }
                 return true;
+            } else {
+                if (Main.CONFIG_DEBUG_ENABLED) {
+                    Main.logger.info(UserDataHandler.class.getName(),
+                            "(DEBUG) User " + player.getName() + " is not linked to Discord.");
+                }
+                return false;
             }
         } catch (Exception e) {
             Main.logger.error(UserDataHandler.class.getName(),
                     "Failed to get user info: " + e.getMessage());
             player.disconnect(new TextComponent(Messages.getMessage().getString("Global.ErrorOnJoin")));
-
             return false;
         }
     }
@@ -265,7 +352,7 @@ public class UserDataHandler {
     public static boolean doesPinExist(String pin) {
         try {
             ResultSet result = Main.connection.createStatement()
-                    .executeQuery("SELECT * FROM `mythicallogin_pins` WHERE `pin` = '" + pin + "'");
+                    .executeQuery("SELECT * FROM `" + TABLE_NAME + "` WHERE `discord_pin` = '" + pin + "'");
             if (!result.next()) {
                 if (Main.CONFIG_DEBUG_ENABLED) {
                     Main.logger.info(UserDataHandler.class.getName(),
@@ -295,5 +382,60 @@ public class UserDataHandler {
      */
     public static String generatePin() {
         return String.valueOf((int) ((Math.random() * 9000) + 1000));
+    }
+
+    /**
+     * Check if a user is linked to Discord
+     * 
+     * @param discord_id The user to check.
+     * 
+     * @return boolean True if the user is linked, false if not.
+     */
+    public static boolean isDiscordLinked(String discord_id) {
+        try {
+            if (Main.CONFIG_DEBUG_ENABLED) {
+                Main.logger.info(UserDataHandler.class.getName(),
+                        "(DEBUG) User " + discord_id + " is attempting to check if linked to Discord.");
+            }
+            String db_discord_id = getUserInfo(discord_id, "discord_id");
+            if (db_discord_id != null && !db_discord_id.equals("None")) {
+                if (Main.CONFIG_DEBUG_ENABLED) {
+                    Main.logger.info(UserDataHandler.class.getName(),
+                            "(DEBUG) User " + db_discord_id + " is linked to Discord.");
+                }
+                return true;
+            } else {
+                if (Main.CONFIG_DEBUG_ENABLED) {
+                    Main.logger.info(UserDataHandler.class.getName(),
+                            "(DEBUG) User " + discord_id + " is not linked to Discord.");
+                }
+                return false;
+            }
+        } catch (Exception e) {
+            Main.logger.error(UserDataHandler.class.getName(),
+                    "Failed to get user info: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Set all users to blocked
+     * 
+     * @return void
+     */
+    public static void setAllBlocked() {
+        try {
+            Connection connection = Main.connection;
+            PreparedStatement statement = connection
+                    .prepareStatement("UPDATE `" + TABLE_NAME + "` SET `blocked` = 'true'");
+            statement.execute();
+            statement.close();
+            if (Main.CONFIG_DEBUG_ENABLED) {
+                Main.logger.info(UserDataHandler.class.getName(),
+                        "(DEBUG) All users have been blocked.");
+            }
+        } catch (Exception e) {
+            Main.logger.error(UserDataHandler.class.getName(), "Failed to block all users: " + e.getMessage());
+        }
     }
 }

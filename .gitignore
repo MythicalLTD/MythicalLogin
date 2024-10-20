@@ -29,3 +29,4 @@ replay_pid*
 build.py
 .vscode/
 dependency-reduced-pom.xml
+/obf/

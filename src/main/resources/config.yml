@@ -1,6 +1,8 @@
-Debug:
-  # Enable or disable debug mode
-  Enabled: true
+# MythicalLogin Configuration File
+PinLogin:
+  ForceAuth: false # Force users to use the pin login system
+  # The length of the pin
+  Length: 4
 
 Metrics:
   # Enable or disable metrics
@@ -25,3 +27,7 @@ Discord:
   guild: 1276929020835008603
   # Discord Invite
   invite: "https://discord.gg/mythicalsystems"
+
+Debug:
+  # Enable or disable debug mode
+  Enabled: true

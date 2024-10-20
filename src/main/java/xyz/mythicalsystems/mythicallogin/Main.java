@@ -3,6 +3,8 @@ package xyz.mythicalsystems.mythicallogin;
 import java.sql.Connection;
 
 import xyz.mythicalsystems.mythicallogin.Config.Config;
+import java.util.Timer;
+import java.util.TimerTask;
 import xyz.mythicalsystems.mythicallogin.Discord.Bot;
 import xyz.mythicalsystems.mythicallogin.Logger.Logger;
 import xyz.mythicalsystems.mythicallogin.Messages.Messages;
@@ -19,6 +21,7 @@ public class Main {
     public static Connection connection;
     public static MySQLConnector mysql;
     public static Bot bot;
+    private static Timer connectionChecker;
 
     /**
      * Settings for the plugin
@@ -29,6 +32,9 @@ public class Main {
     public static String CONFIG_DISCORD_INVITE;
     public static boolean CONFIG_DEBUG_ENABLED;
 
+    /**
+     * This method is used to start the plugin
+     */
     public static void start() {
         // Initialize the logger
         logger = new Logger();
@@ -69,6 +75,7 @@ public class Main {
                     Config.getSetting().getString("Database.Password"));
             mysql.tryConnection();
             connection = mysql.getHikari().getConnection();
+            startConnectionChecker();
 
         } catch (Exception e) {
             mysql.reconnect();
@@ -93,7 +100,7 @@ public class Main {
             logger.error(Main.class.getName(), "Failed to register commands: " + e.getMessage());
         }
 
-        //Register events
+        // Register events
         logger.info(Main.class.getName(), "Registering events...");
         try {
             // Register the event listener
@@ -108,12 +115,41 @@ public class Main {
                 "Plugin took " + (System.currentTimeMillis() - MinecraftPlugin.START_TIME) + "ms to start");
     }
 
-    public static void stop() {
+    /**
+     * This method is used to check the connection to the MySQL server
+     * 
+     * @return void
+     */
+    private static void startConnectionChecker() {
+        connectionChecker = new Timer(true);
+        connectionChecker.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    if (connection == null || connection.isClosed() || !connection.isValid(2)) {
+                        logger.warn(Main.class.getName(), "MySQL connection lost, attempting to reconnect...");
+                        connection = mysql.getHikari().getConnection();
+                        logger.info(Main.class.getName(), "MySQL connection reestablished.");
+                    }
+                } catch (Exception e) {
+                    logger.error(Main.class.getName(), "Failed to reestablish MySQL connection: " + e.getMessage());
+                    MinecraftPlugin.getInstance().getProxy().stop();
+                }
+            }
+        }, 0, 300000); // Check every 5 minutes
+    }
 
+    /**
+     * This method is used to stop the plugin
+     */
+    public static void stop() {
         mysql.close();
         logger.info(Main.class.getName(), "Plugin Stopped");
     }
 
+    /**
+     * This method is used to reload the plugin
+     */
     public static void reload() {
         stop();
         start();

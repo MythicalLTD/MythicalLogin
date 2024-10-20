@@ -11,7 +11,7 @@ public class Link {
 
     public Link(ProxiedPlayer player) {
         if (player.hasPermission(Permissions.USER_LINK)) {            
-            if (UserDataHandler.isDiscordLinked(player)) {
+            if (UserDataHandler.isDiscordLinked(player) == true)  {
                 player.sendMessage(new TextComponent(ChatTranslator.Translate(Messages.getMessage().getString("Discord.AlreadyLinked"))));
             } else {
                 String pin = UserDataHandler.generatePin();

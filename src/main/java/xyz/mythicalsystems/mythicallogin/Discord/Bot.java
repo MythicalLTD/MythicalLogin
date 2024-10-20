@@ -1,11 +1,16 @@
 package xyz.mythicalsystems.mythicallogin.Discord;
 
+import java.time.Duration;
+
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
+import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.server.Server;
 
 import xyz.mythicalsystems.mythicallogin.Main;
-import xyz.mythicalsystems.mythicallogin.Config.Config;
+import xyz.mythicalsystems.mythicallogin.Discord.commands.HelpDiscordCommand;
+import xyz.mythicalsystems.mythicallogin.Discord.commands.LinkDiscordCommand;
+import xyz.mythicalsystems.mythicallogin.Discord.commands.UnLinkDiscordCommand;
 import xyz.mythicalsystems.mythicallogin.Discord.event.OnDms;
 import xyz.mythicalsystems.mythicallogin.Messages.Messages;
 
@@ -13,18 +18,22 @@ public class Bot {
     public static DiscordApi bot;
     public Server server;
     public static Bot instance;
-
+    /**
+     * This method is used to start the bot!
+     * 
+     * @return void
+     */
     public void start() {
         instance = this;
-        
+
         new DiscordApiBuilder()
-            .setToken(Main.CONFIG_DISCORD_TOKEN)
-            .login()
-            .thenAccept(this::onConnectToDiscord)
-            .exceptionally(error -> {
-                Main.logger.warn("Bot", "Failed to connect to Discord: " + error.getMessage());
-                return null;
-            });
+                .setToken(Main.CONFIG_DISCORD_TOKEN)
+                .login()
+                .thenAccept(this::onConnectToDiscord)
+                .exceptionally(error -> {
+                    Main.logger.warn("Bot", "Failed to connect to Discord: " + error.getMessage());
+                    return null;
+                });
     }
 
     private void onConnectToDiscord(DiscordApi api) {
@@ -36,7 +45,9 @@ public class Bot {
          * Register commands here!
          */
 
-
+        HelpDiscordCommand.register("help", Messages.getMessage().getString("Bot.Commands.Help.Description"));
+        LinkDiscordCommand.register("link", Messages.getMessage().getString("Bot.Commands.Link.Description"));
+        UnLinkDiscordCommand.register("unlink", Messages.getMessage().getString("Bot.Commands.Unlink.Description"));
         /**
          * Register events here!
          */
@@ -45,12 +56,44 @@ public class Bot {
         Main.logger.info("Bot", "Events registered!");
 
     }
-
+    /**
+     * This method is used to stop the bot!
+     *
+     * @return void 
+     */
     public void stop() {
         if (bot != null) {
             bot.disconnect();
             bot = null;
         }
+    }
+
+    /**
+     * This method is used to send a message to a user!
+     * 
+     * @param message
+     * @param user_id
+     */
+    public void sendMessageToUser(EmbedBuilder message, String user_id) {
+        bot.getUserById(user_id).thenAccept(user -> {
+            user.sendMessage(message).thenAccept(sentMessage -> {
+                sentMessage.addReaction("\u2139");
+            });
+        });
+    }
+    /**
+     * This method is used to send a message to a user!
+     * 
+     * @param message
+     * @param user_id
+     */
+    public void sendMessageToUser(String message, String user_id) {
+        bot.getUserById(user_id).thenAccept(user -> {
+            user.sendMessage(message).thenAccept(sentMessage -> {
+                sentMessage.addReaction("\u2139");
+                sentMessage.deleteAfter(Duration.ofSeconds(3));
+            });
+        });
     }
 
     /**

@@ -14,7 +14,7 @@ public class UnLink {
                 UserDataHandler.setUserInfo(player, "discord_id", "None");
                 UserDataHandler.setUserInfo(player, "discord_pin", "None");
                 player.sendMessage(new TextComponent(
-                        ChatTranslator.Translate(Messages.getMessage().getString("Discord.Unlinked"))));
+                        ChatTranslator.Translate(Messages.getMessage().getString("Discord.Unlink"))));
             } else {
                 player.sendMessage(new TextComponent(
                         ChatTranslator.Translate(Messages.getMessage().getString("Discord.NotLinked"))));

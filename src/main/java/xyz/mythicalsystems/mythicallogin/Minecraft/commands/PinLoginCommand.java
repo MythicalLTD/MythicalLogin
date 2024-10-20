@@ -94,22 +94,12 @@ public class PinLoginCommand extends Command implements TabExecutor {
                 if (sender.hasPermission(Permissions.ADMIN_FORCELOGIN)) {
                     if ("forcelogin".startsWith(partialCommand)) {
                         completions.add("forcelogin");
-                        for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
-                            if (player.getName().toLowerCase().startsWith(partialCommand)) {
-                                completions.add(player.getName());
-                            }
-                        }
                     }
                 }
 
                 if (sender.hasPermission(Permissions.ADMIN_FORCELOGOUT)) {
                     if ("forcelogout".startsWith(partialCommand)) {
                         completions.add("forcelogout");
-                        for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
-                            if (player.getName().toLowerCase().startsWith(partialCommand)) {
-                                completions.add(player.getName());
-                            }
-                        }
                     }
                 }
 
@@ -122,6 +112,40 @@ public class PinLoginCommand extends Command implements TabExecutor {
                 if (sender.hasPermission(Permissions.ADMIN_FORCEUNLINK)) {
                     if ("forceunlink".startsWith(partialCommand)) {
                         completions.add("forceunlink");
+                    }
+                }
+            }
+            return completions;
+        } else if (args.length == 3) {
+            String subCommand = args[0];
+            String subSubCommand = args[1];
+            String subSubSubCommand = args[2];
+            List<String> completions = new ArrayList<>();
+            String partialCommand = subSubSubCommand.toLowerCase();
+
+            if (subCommand.equalsIgnoreCase("admin")) {
+                if (subSubCommand.equalsIgnoreCase("forcelogin")) {
+                    if (sender.hasPermission(Permissions.ADMIN_FORCELOGIN)) {
+                        for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
+                            if (player.getName().toLowerCase().startsWith(partialCommand)) {
+                                completions.add(player.getName());
+                            }
+                        }
+                    }
+                }
+
+                if (subSubCommand.equalsIgnoreCase("forcelogout")) {
+                    if (sender.hasPermission(Permissions.ADMIN_FORCELOGOUT)) {
+                        for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
+                            if (player.getName().toLowerCase().startsWith(partialCommand)) {
+                                completions.add(player.getName());
+                            }
+                        }
+                    }
+                }
+
+                if (subSubCommand.equalsIgnoreCase("forceunlink")) {
+                    if (sender.hasPermission(Permissions.ADMIN_FORCEUNLINK)) {
                         for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
                             if (player.getName().toLowerCase().startsWith(partialCommand)) {
                                 completions.add(player.getName());
