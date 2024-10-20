@@ -1,15 +1,17 @@
 package xyz.mythicalsystems.mythicallogin.MySQL;
 
 import java.net.InetSocketAddress;
-import java.sql.ResultSet;
 import java.util.UUID;
 
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.sql.*;
 import xyz.mythicalsystems.mythicallogin.Main;
+import xyz.mythicalsystems.mythicallogin.Messages.Messages;
 
 public class UserDataHandler {
+    public static final String TABLE_NAME = "mythicallogin_users";
 
     /**
      * Register a user in the database.
@@ -19,27 +21,41 @@ public class UserDataHandler {
      * @return void
      */
     public static void registerUser(ProxiedPlayer player) {
+        if (Main.CONFIG_DEBUG_ENABLED) {
+            Main.logger.info(UserDataHandler.class.getName(),
+                    "(DEBUG) User " + player.getDisplayName() + " is attempting to register.");
+        }
         UUID uuid = player.getUniqueId();
         String uuid_string = uuid.toString();
         String username = player.getName();
         InetSocketAddress socketAddress = (InetSocketAddress) player.getSocketAddress();
         String ipAddress = socketAddress.getAddress().getHostAddress();
 
-        if (isRegistered(uuid)) {
+        if (!isRegistered(uuid)) {
             try {
                 Connection connection = Main.connection;
                 PreparedStatement statement = connection.prepareStatement(
-                        "INSERT INTO `mythicallogin_users` (`uuid`, `username`, `first_ip`, `last_ip`) VALUES (?, ?, ?, ?)");
+                        "INSERT INTO `" + TABLE_NAME
+                                + "` (`uuid`, `username`, `first_ip`, `last_ip`) VALUES (?, ?, ?, ?)");
                 statement.setString(1, uuid_string);
                 statement.setString(2, username);
                 statement.setString(3, ipAddress);
                 statement.setString(4, ipAddress);
-                statement.executeUpdate();
+                statement.execute();
                 statement.close();
+                if (Main.CONFIG_DEBUG_ENABLED) {
+                    Main.logger.info(UserDataHandler.class.getName(),
+                            "(DEBUG) User " + username + " has been registered.");
+                }
             } catch (Exception e) {
                 Main.logger.error(UserDataHandler.class.getName(), "Failed to register user: " + e.getMessage());
+                player.disconnect(new TextComponent(Messages.getMessage().getString("Global.ErrorOnJoin")));
             }
         } else {
+            if (Main.CONFIG_DEBUG_ENABLED) {
+                Main.logger.info(UserDataHandler.class.getName(),
+                        "(DEBUG) User " + username + " is already registered.");
+            }
             return;
         }
     }
@@ -56,13 +72,17 @@ public class UserDataHandler {
         try {
             Connection connection = Main.connection;
             PreparedStatement statement = connection
-                    .prepareStatement("DELETE FROM `mythicallogin_users` WHERE `uuid` = ?");
+                    .prepareStatement("DELETE FROM `" + TABLE_NAME + "` WHERE `uuid` = ?");
             statement.setString(1, uuid_string);
-            statement.executeUpdate();
+            statement.execute();
             statement.close();
-
+            if (Main.CONFIG_DEBUG_ENABLED) {
+                Main.logger.info(UserDataHandler.class.getName(),
+                        "(DEBUG) User " + player.getName() + " has been unregistered.");
+            }
         } catch (Exception e) {
             Main.logger.error(UserDataHandler.class.getName(), "Failed to unregister user: " + e.getMessage());
+            player.disconnect(new TextComponent(Messages.getMessage().getString("Global.ErrorOnJoin")));
         }
     }
 
@@ -77,11 +97,19 @@ public class UserDataHandler {
         try {
 
             ResultSet result = Main.connection.createStatement()
-                    .executeQuery("SELECT * FROM `mythicallogin_users` WHERE `uuid` = '" + uuid + "'");
+                    .executeQuery("SELECT * FROM `" + TABLE_NAME + "` WHERE `uuid` = '" + uuid.toString() + "'");
             if (!result.next()) {
+                if (Main.CONFIG_DEBUG_ENABLED) {
+                    Main.logger.info(UserDataHandler.class.getName(),
+                            "(DEBUG) User " + uuid.toString() + " is not registered.");
+                }
                 result.close();
                 return false;
             } else {
+                if (Main.CONFIG_DEBUG_ENABLED) {
+                    Main.logger.info(UserDataHandler.class.getName(),
+                            "(DEBUG) User " + uuid.toString() + " is registered.");
+                }
                 result.close();
                 return true;
             }
@@ -107,21 +135,26 @@ public class UserDataHandler {
         try {
             Connection connection = Main.connection;
             PreparedStatement statement = connection
-                    .prepareStatement("UPDATE `mythicallogin_users` SET `last_ip` = ? WHERE `uuid` = ?");
+                    .prepareStatement("UPDATE `" + TABLE_NAME + "` SET `last_ip` = ? WHERE `uuid` = ?");
             statement.setString(1, ipAddress);
             statement.setString(2, uuid.toString());
-            statement.executeUpdate();
+            statement.execute();
             statement.close();
-
+            if (Main.CONFIG_DEBUG_ENABLED) {
+                Main.logger.info(UserDataHandler.class.getName(),
+                        "(DEBUG) User " + player.getName() + " has updated their IP.");
+            }
         } catch (Exception e) {
             Main.logger.error(UserDataHandler.class.getName(), "Failed to update user IP: " + e.getMessage());
+            player.disconnect(new TextComponent(Messages.getMessage().getString("Global.ErrorOnJoin")));
         }
     }
+
     /**
      * Get user info from the database.
      * 
      * @param player The player to get info for.
-     * @param info The info to get.
+     * @param info   The info to get.
      * 
      * @return String The value of the info.
      */
@@ -130,18 +163,28 @@ public class UserDataHandler {
         String uuid_string = uuid.toString();
         try {
             ResultSet result = Main.connection.createStatement()
-                    .executeQuery("SELECT * FROM `mythicallogin_users` WHERE `uuid` = '" + uuid_string + "'");
+                    .executeQuery("SELECT * FROM `" + TABLE_NAME + "` WHERE `uuid` = '" + uuid_string + "'");
             if (result.next()) {
                 String value = result.getString(info);
                 result.close();
+                if (Main.CONFIG_DEBUG_ENABLED) {
+                    Main.logger.info(UserDataHandler.class.getName(),
+                            "(DEBUG) User " + player.getName() + " has requested info: " + info + " = " + value);
+                }
                 return value;
             } else {
                 result.close();
+                if (Main.CONFIG_DEBUG_ENABLED) {
+                    Main.logger.info(UserDataHandler.class.getName(),
+                            "(DEBUG) User " + player.getName() + " has requested info: " + info + " = null");
+                }
                 return null;
             }
         } catch (Exception e) {
             Main.logger.error(UserDataHandler.class.getName(),
                     "Failed to get user info: " + e.getMessage());
+            player.disconnect(new TextComponent(Messages.getMessage().getString("Global.ErrorOnJoin")));
+
             return null;
         }
     }
@@ -150,10 +193,10 @@ public class UserDataHandler {
      * Set user info in the database.
      * 
      * @param player The player to set info for.
-     * @param info The info to set.
-     * @param value The value to set.
+     * @param info   The info to set.
+     * @param value  The value to set.
      * 
-     * @return void 
+     * @return void
      */
     public static void setUserInfo(ProxiedPlayer player, String info, String value) {
         UUID uuid = player.getUniqueId();
@@ -161,14 +204,96 @@ public class UserDataHandler {
         try {
             Connection connection = Main.connection;
             PreparedStatement statement = connection
-                    .prepareStatement("UPDATE `mythicallogin_users` SET `" + info + "` = ? WHERE `uuid` = ?");
+                    .prepareStatement("UPDATE `" + TABLE_NAME + "` SET `" + info + "` = ? WHERE `uuid` = ?");
             statement.setString(1, value);
             statement.setString(2, uuid_string);
-            statement.executeUpdate();
+            statement.execute();
             statement.close();
-
+            if (Main.CONFIG_DEBUG_ENABLED) {
+                Main.logger.info(UserDataHandler.class.getName(),
+                        "(DEBUG) User " + player.getName() + " has set info: " + info + " = " + value);
+            }
         } catch (Exception e) {
             Main.logger.error(UserDataHandler.class.getName(), "Failed to set user info: " + e.getMessage());
+            player.disconnect(new TextComponent(Messages.getMessage().getString("Global.ErrorOnJoin")));
         }
+    }
+
+    /**
+     * Check if a user already linked his discord accounts
+     * 
+     * @param player The player to check.
+     * 
+     * @return boolean True if the user is linked, false if not.
+     */
+    public static boolean isDiscordLinked(ProxiedPlayer player) {
+        try {
+            if (Main.CONFIG_DEBUG_ENABLED) {
+                Main.logger.info(UserDataHandler.class.getName(),
+                        "(DEBUG) User " + player.getName() + " is attempting to check if linked to Discord.");
+            }
+            String discord_id = getUserInfo(player, "discord_id");
+            if (discord_id == "None") {
+                if (Main.CONFIG_DEBUG_ENABLED) {
+                    Main.logger.info(UserDataHandler.class.getName(),
+                            "(DEBUG) User " + player.getName() + " is not linked to Discord.");
+                }
+                return false;
+            } else {
+                if (Main.CONFIG_DEBUG_ENABLED) {
+                    Main.logger.info(UserDataHandler.class.getName(),
+                            "(DEBUG) User " + player.getName() + " is linked to Discord.");
+                }
+                return true;
+            }
+        } catch (Exception e) {
+            Main.logger.error(UserDataHandler.class.getName(),
+                    "Failed to get user info: " + e.getMessage());
+            player.disconnect(new TextComponent(Messages.getMessage().getString("Global.ErrorOnJoin")));
+
+            return false;
+        }
+    }
+
+    /**
+     * Check if a pin exists in the database.
+     * 
+     * @param pin The pin to check.
+     * 
+     * @return boolean True if the pin exists, false if not.
+     */
+    public static boolean doesPinExist(String pin) {
+        try {
+            ResultSet result = Main.connection.createStatement()
+                    .executeQuery("SELECT * FROM `mythicallogin_pins` WHERE `pin` = '" + pin + "'");
+            if (!result.next()) {
+                if (Main.CONFIG_DEBUG_ENABLED) {
+                    Main.logger.info(UserDataHandler.class.getName(),
+                            "(DEBUG) Pin " + pin + " does not exist.");
+                }
+                result.close();
+                return false;
+            } else {
+                if (Main.CONFIG_DEBUG_ENABLED) {
+                    Main.logger.info(UserDataHandler.class.getName(),
+                            "(DEBUG) Pin " + pin + " exists.");
+                }
+                result.close();
+                return true;
+            }
+        } catch (Exception e) {
+            Main.logger.error(UserDataHandler.class.getName(),
+                    "Failed to check if pin exists: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Generate a pin
+     * 
+     * @return
+     */
+    public static String generatePin() {
+        return String.valueOf((int) ((Math.random() * 9000) + 1000));
     }
 }

@@ -27,6 +27,7 @@ public class Main {
     public static String CONFIG_DISCORD_TOKEN;
     public static int CONFIG_DISCORD_GUILD;
     public static String CONFIG_DISCORD_INVITE;
+    public static boolean CONFIG_DEBUG_ENABLED;
 
     public static void start() {
         // Initialize the logger
@@ -41,6 +42,7 @@ public class Main {
             CONFIG_DISCORD_TOKEN = Config.getSetting().getString("Discord.token");
             CONFIG_DISCORD_GUILD = Config.getSetting().getInt("Discord.guild");
             CONFIG_DISCORD_INVITE = Config.getSetting().getString("Discord.invite");
+            CONFIG_DEBUG_ENABLED = Config.getSetting().getBoolean("Debug.Enabled");
             logger.info(Main.class.getName(), "Config Initialized");
         } catch (Exception e) {
             logger.error(Main.class.getName(), "Failed to initialize Config: " + e.getMessage());
@@ -67,23 +69,6 @@ public class Main {
                     Config.getSetting().getString("Database.Password"));
             mysql.tryConnection();
             connection = mysql.getHikari().getConnection();
-            java.util.Timer timer = new java.util.Timer();
-            timer.schedule(new java.util.TimerTask() {
-                @Override
-                public void run() {
-                    try {
-                        if (connection != null && !connection.isClosed()) {
-                            connection.close();
-                        }
-                        mysql.reconnect();
-                        connection = mysql.getHikari().getConnection();
-                        logger.info(Main.class.getName(), "Database connection restarted");
-                    } catch (Exception e) {
-                        logger.error(Main.class.getName(),
-                                "Failed to restart the database connection: " + e.getMessage());
-                    }
-                }
-            }, 0, 3600000); // 1 hour
 
         } catch (Exception e) {
             mysql.reconnect();

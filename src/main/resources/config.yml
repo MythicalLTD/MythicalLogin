@@ -1,3 +1,6 @@
+Debug:
+  # Enable or disable debug mode
+  Enabled: true
 
 Metrics:
   # Enable or disable metrics

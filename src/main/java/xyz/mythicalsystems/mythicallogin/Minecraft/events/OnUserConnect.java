@@ -4,6 +4,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import xyz.mythicalsystems.mythicallogin.Main;
 import xyz.mythicalsystems.mythicallogin.MinecraftPlugin;
 import xyz.mythicalsystems.mythicallogin.MySQL.UserDataHandler;
 
@@ -15,7 +16,7 @@ public class OnUserConnect implements Listener {
         MinecraftPlugin.TASK_SCHEDULER.runAsync(MinecraftPlugin.getInstance(), () -> {
             // Register the user
             UserDataHandler.registerUser(player);
-
+            Main.logger.info("OnUserConnect", "User " + player.getName() + " has connected.");
         });
     }
     
