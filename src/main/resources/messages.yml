@@ -15,7 +15,7 @@
 
 Global:
   Prefix: "&7[&bMythicalLogin&7] &8|&r "
-  InvalidCommand: "{prefix}&7Invalid command! Use &d/pinlogin help&f to see the available commands!"
+  InvalidCommand: "{prefix}&7Invalid command! Use &d/pinlogin help&7 to see the available commands!"
   NoPermission: "{prefix}&7You don't have permission to use this command!"
   Reloaded: "{prefix}&7The MythicalLogin configuration has been reloaded!"
   ErrorOnJoin: "{prefix}&7An error occurred while trying to join the server! Please try again later!"

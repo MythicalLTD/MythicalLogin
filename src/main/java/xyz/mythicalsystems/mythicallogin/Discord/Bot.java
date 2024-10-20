@@ -5,9 +5,13 @@ import java.time.Duration;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
+import org.javacord.api.entity.permission.Permissions;
 import org.javacord.api.entity.server.Server;
 
 import xyz.mythicalsystems.mythicallogin.Main;
+import xyz.mythicalsystems.mythicallogin.Discord.commands.ForceLoginDiscordCommand;
+import xyz.mythicalsystems.mythicallogin.Discord.commands.ForceLogoutDiscordCommand;
+import xyz.mythicalsystems.mythicallogin.Discord.commands.ForceUnlinkDiscordCommand;
 import xyz.mythicalsystems.mythicallogin.Discord.commands.HelpDiscordCommand;
 import xyz.mythicalsystems.mythicallogin.Discord.commands.LinkDiscordCommand;
 import xyz.mythicalsystems.mythicallogin.Discord.commands.UnLinkDiscordCommand;
@@ -39,7 +43,7 @@ public class Bot {
     private void onConnectToDiscord(DiscordApi api) {
         bot = api;
         Main.logger.info("Bot", "Connected to Discord as " + api.getYourself().getDiscriminatedName());
-        Main.logger.info("Bot", "Open the following url to invite the bot: " + api.createBotInvite());
+        Main.logger.info("Bot", "Open the following url to invite the bot: " + api.createBotInvite(Permissions.fromBitmask(84032)));
 
         /**
          * Register commands here!
@@ -48,6 +52,10 @@ public class Bot {
         HelpDiscordCommand.register("help", Messages.getMessage().getString("Bot.Commands.Help.Description"));
         LinkDiscordCommand.register("link", Messages.getMessage().getString("Bot.Commands.Link.Description"));
         UnLinkDiscordCommand.register("unlink", Messages.getMessage().getString("Bot.Commands.Unlink.Description"));
+        ForceLoginDiscordCommand.register("forcelogin", "Force login a user!");
+        ForceUnlinkDiscordCommand.register("forceunlink", "Force unlink a user!");
+        ForceLogoutDiscordCommand.register("forcelogoutall", "Force logout all users!");
+
         /**
          * Register events here!
          */

@@ -11,10 +11,10 @@ public class Reload {
     public Reload(ProxiedPlayer player) {
         if (player.hasPermission(Permissions.ADMIN_RELOAD)) {
             Main.reload();
-            player.sendMessage(new TextComponent(Messages.getMessage().getString("Global.Reloaded")));
+            player.sendMessage(new TextComponent(Messages.getMessage().getString("Global.Reloaded").replace("%prefix%", Messages.getMessage().getString("Global.Prefix"))));
         }
     }
-    
+
     public Reload(CommandSender sender) {
         Main.reload();
         sender.sendMessage(new TextComponent(Messages.getMessage().getString("Global.Reloaded")));
