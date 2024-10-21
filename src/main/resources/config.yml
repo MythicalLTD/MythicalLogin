@@ -1,8 +1,9 @@
 # MythicalLogin Configuration File
 PinLogin:
-  ForceAuth: false # Force users to use the pin login system
   # The length of the pin
-  Length: 4
+  Length: 6
+  # License Key
+  LicenseKey: "5a569a45-0777-cd30-4511-588a4e813324" 
 
 Metrics:
   # Enable or disable metrics

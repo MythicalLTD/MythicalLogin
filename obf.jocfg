@@ -1,0 +1,94 @@
+{
+  "input": "C:\\Users\\NaysKutzu\\Documents\\GitHub\\MythicalLogin\\target\\MythicalLogin-1.0-SNAPSHOT.jar",
+  "output": "C:\\Users\\NaysKutzu\\Documents\\GitHub\\MythicalLogin\\MythicalLogin.jar",
+  "script": "function isRemappingEnabledForClass(node) {\n    return true;\n}\nfunction isObfuscatorEnabledForClass(node) {\n    return true;\n}",
+  "libraries": [],
+  "Crasher": {
+    "Enabled": true,
+    "Invalid Signatures": true,
+    "Empty annotation spam": true
+  },
+  "InvokeDynamic": {
+    "Enabled": true
+  },
+  "HWIDPRotection": {
+    "Enabled": false,
+    "HWID": "3AA19A482327A312EE306647E775334F"
+  },
+  "Optimizer": {
+    "Enabled": false,
+    "Replace String.equals()": false,
+    "Replace String.equalsIgnoreCase()": false,
+    "Optimize static string calls": false
+  },
+  "LineNumberRemover": {
+    "Enabled": true,
+    "Rename local variables": true,
+    "Remove Line Numbers": true,
+    "Remove Debug Names": true,
+    "Add Local Variables": true,
+    "New SourceFile Name": ""
+  },
+  "StringEncryption": {
+    "Enabled": true,
+    "HideStrings": false,
+    "AES": false
+  },
+  "NumberObfuscation": {
+    "Enabled": true,
+    "Extract to Array": true,
+    "Obfuscate Zero": true,
+    "Shift": true,
+    "And": true,
+    "Multiple Instructions": true
+  },
+  "ReferenceProxy": {
+    "Enabled": false
+  },
+  "ShuffleMembers": {
+    "Enabled": true
+  },
+  "InnerClassRemover": {
+    "Enabled": true,
+    "Remap": false,
+    "Remove Metadata": true
+  },
+  "NameObfuscation": {
+    "Enabled": false,
+    "Excluded classes": "me.name.Class\nme.name.*\nio.netty.**",
+    "Excluded methods": "me.name.Class.method\nme.name.Class**\nme.name.Class.*",
+    "Excluded fields": "me.name.Class.field\nme.name.Class.*\nme.name.**",
+    "Package": false,
+    "New Packages": "",
+    "Accept Missing Libraries": true
+  },
+  "General Settings": {
+    "Generator characters": "Il",
+    "Custom dictionary": false,
+    "Class Name dictionary": "",
+    "Name dictionary": "",
+    "Use STORE instead of DEFLATE (For e.g. SpringBoot)": false
+  },
+  "Packager": {
+    "Enabled": false,
+    "Use MainClass from the JAR manifest": true,
+    "Main class": "xyz.mythicalsystems.mythicallogin.MinecraftPlugin"
+  },
+  "FlowObfuscator": {
+    "Enabled": true,
+    "Mangle Comparisons": true,
+    "Replace GOTO": true,
+    "Replace If": true,
+    "Bad POP": true,
+    "Bad Concat": true,
+    "Mangle Switches": true,
+    "Mangle Return": false,
+    "Mangle Local Variables": false
+  },
+  "HideMembers": {
+    "Enabled": true
+  },
+  "Inlining": {
+    "Enabled": false
+  }
+}

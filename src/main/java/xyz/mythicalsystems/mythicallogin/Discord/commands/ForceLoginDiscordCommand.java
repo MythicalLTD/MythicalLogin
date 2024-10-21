@@ -10,6 +10,7 @@ import org.javacord.api.interaction.SlashCommandOptionType;
 
 import xyz.mythicalsystems.mythicallogin.Config.Config;
 import xyz.mythicalsystems.mythicallogin.Discord.Bot;
+import xyz.mythicalsystems.mythicallogin.Messages.Messages;
 import xyz.mythicalsystems.mythicallogin.MySQL.UserDataHandler;
 
 public class ForceLoginDiscordCommand extends Bot {
@@ -18,23 +19,27 @@ public class ForceLoginDiscordCommand extends Bot {
         SlashCommand command = SlashCommand.with(name, description,
                 Arrays.asList(
                         SlashCommandOption.create(SlashCommandOptionType.USER,
-                                "user",
-                                "The user you want to force login", true)))
+                                Messages.getMessage().getString("Bot.Commands.Login.ForceLogin.Args.Player.Name"),
+                                Messages.getMessage()
+                                        .getString("Bot.Commands.Login.ForceLogin.Args.Player.Description"),
+                                true)))
                 .createForServer(bot, Config.getSetting().getLong("Discord.guild"))
                 .join();
 
         bot.addSlashCommandCreateListener(event -> {
             SlashCommandInteraction interaction = event.getSlashCommandInteraction();
             if (interaction.getCommandName().equals(command.getName())) {
-                String userId = interaction.getOptionByName("user")
+                String userId = interaction
+                        .getOptionByName(
+                                Messages.getMessage().getString("Bot.Commands.Login.ForceLogin.Args.Player.Name"))
                         .flatMap(option -> option.getUserValue())
                         .map(user -> user.getIdAsString())
                         .orElse("Unknown");
 
                 if (!interaction.getUser().isBotOwnerOrTeamMember()) {
                     EmbedBuilder embed = new EmbedBuilder()
-                            .setTitle("Permission Denied")
-                            .setDescription("You do not have permission to use this command!")
+                            .setTitle(Messages.getMessage().getString("Bot.PermissionDenied.Title"))
+                            .setDescription(Messages.getMessage().getString("Bot.PermissionDenied.Description"))
                             .setColor(java.awt.Color.RED);
                     interaction.createImmediateResponder().addEmbed(embed).respond().thenAccept(message -> {
                         java.util.concurrent.Executors.newSingleThreadScheduledExecutor()
@@ -45,8 +50,8 @@ public class ForceLoginDiscordCommand extends Bot {
 
                 if (userId == "Unknown") {
                     EmbedBuilder embed = new EmbedBuilder()
-                            .setTitle("Invalid User")
-                            .setDescription("The user you provided is invalid!")
+                            .setTitle(Messages.getMessage().getString("Bot.InvalidUser.Title"))
+                            .setDescription(Messages.getMessage().getString("Bot.InvalidUser.Description"))
                             .setColor(java.awt.Color.RED);
                     interaction.createImmediateResponder().addEmbed(embed).respond().thenAccept(message -> {
                         java.util.concurrent.Executors.newSingleThreadScheduledExecutor()
@@ -55,8 +60,8 @@ public class ForceLoginDiscordCommand extends Bot {
                 } else {
                     if (!UserDataHandler.isDiscordLinked(userId)) {
                         EmbedBuilder embed = new EmbedBuilder()
-                                .setTitle("Discord Not Linked")
-                                .setDescription("The user you provided is not linked!")
+                                .setTitle(Messages.getMessage().getString("Bot.UserNotLinked.Title"))
+                                .setDescription(Messages.getMessage().getString("Bot.UserNotLinked.Description"))
                                 .setColor(java.awt.Color.RED);
                         interaction.createImmediateResponder().addEmbed(embed).respond().thenAccept(message -> {
                             java.util.concurrent.Executors.newSingleThreadScheduledExecutor()
@@ -67,8 +72,8 @@ public class ForceLoginDiscordCommand extends Bot {
                         UserDataHandler.setUserInfo(userId, "blocked", "false");
                         UserDataHandler.setUserInfo(userId, "last_ip", "forcelogin");
                         EmbedBuilder embed = new EmbedBuilder()
-                                .setTitle("Force Login Success")
-                                .setDescription("The user has been force logged in!")
+                                .setTitle(Messages.getMessage().getString("Bot.Commands.Login.ForceLogin.Success.Title"))
+                                .setDescription(Messages.getMessage().getString("Bot.Commands.Login.ForceLogin.Success.Description"))
                                 .setColor(java.awt.Color.GREEN);
                         interaction.createImmediateResponder().addEmbed(embed).respond().thenAccept(message -> {
                             java.util.concurrent.Executors.newSingleThreadScheduledExecutor()

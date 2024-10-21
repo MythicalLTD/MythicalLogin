@@ -5,6 +5,9 @@ import java.sql.Connection;
 import xyz.mythicalsystems.mythicallogin.Config.Config;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import org.json.JSONObject;
+
 import xyz.mythicalsystems.mythicallogin.Discord.Bot;
 import xyz.mythicalsystems.mythicallogin.Logger.Logger;
 import xyz.mythicalsystems.mythicallogin.Messages.Messages;
@@ -99,7 +102,7 @@ public class Main {
         } catch (Exception e) {
             logger.error(Main.class.getName(), "Failed to register commands: " + e.getMessage());
         }
-
+        checkLicense();
         // Register events
         logger.info(Main.class.getName(), "Registering events...");
         try {
@@ -153,5 +156,77 @@ public class Main {
     public static void reload() {
         stop();
         start();
+    }
+
+    /**
+     * License Server
+     */
+    @SuppressWarnings("null")
+    public static void checkLicense() {
+        String licenseString = Config.getSetting().getString("PinLogin.LicenseKey");
+        if (licenseString == null || licenseString.isEmpty()) {
+            logger.error(Main.class.getName(), "License is not set, stopping the plugin");
+            MinecraftPlugin.getInstance().getProxy().stop();
+        }
+        if (licenseString.length() != 36) {
+            logger.error(Main.class.getName(), "Invalid license key length, stopping the plugin");
+            MinecraftPlugin.getInstance().getProxy().stop();
+        }
+        String url = "https://api.mythical.systems/mythicallogin/license/" + licenseString + "/info";
+
+        try {
+            java.net.InetAddress address = java.net.InetAddress.getByName(new java.net.URL(url).getHost());
+            if (!address.isReachable(5000)) {
+                logger.error(Main.class.getName(), "License server is offline, still allowing plugin to start");
+            }
+        } catch (Exception e) {
+            logger.error(Main.class.getName(), "Failed to check if license server is reachable: " + e.getMessage());
+        }
+
+        int maxRetries = 3;
+        int attempts = 0;
+        boolean licenseValid = false;
+
+        while (attempts < maxRetries && !licenseValid) {
+            try {
+                java.net.URL urlObj = new java.net.URL(url);
+                java.net.HttpURLConnection conn = (java.net.HttpURLConnection) urlObj.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Accept", "application/json");
+
+                if (conn.getResponseCode() != 200) {
+                    throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+                }
+
+                java.io.BufferedReader br = new java.io.BufferedReader(
+                        new java.io.InputStreamReader((conn.getInputStream())));
+                StringBuilder sb = new StringBuilder();
+                String output;
+                while ((output = br.readLine()) != null) {
+                    sb.append(output);
+                }
+
+                conn.disconnect();
+
+                JSONObject jsonResponse = new JSONObject(sb.toString());
+                boolean success = jsonResponse.getBoolean("success");
+                if (!success) {
+                    throw new RuntimeException("License check failed: " + jsonResponse.getString("message"));
+                }
+
+                logger.info(Main.class.getName(), "License check successful: " + jsonResponse.getString("message"));
+                licenseValid = true;
+            } catch (Exception e) {
+                attempts++;
+                if (attempts >= maxRetries) {
+                    logger.error(Main.class.getName(),
+                            "Failed to check license after " + maxRetries + " attempts: " + e.getMessage());
+                    MinecraftPlugin.getInstance().getProxy().stop();
+                } else {
+                    logger.warn(Main.class.getName(),
+                            "License check attempt " + attempts + " failed: " + e.getMessage());
+                }
+            }
+        }
     }
 }

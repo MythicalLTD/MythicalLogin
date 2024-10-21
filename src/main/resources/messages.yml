@@ -66,6 +66,15 @@ Discord:
     - "&7to verify your identity and allow this ip to connect!!"
 
 Bot:
+  PermissionDenied: 
+    Title: "Permission Denied!"
+    Description: "You don't have permission to use this command!"
+  InvalidUser:
+    Title: "Invalid User!"
+    Description: "The user you provided is invalid! Please try again!"
+  UserNotLinked: 
+    Title: "User not linked!"
+    Description: "The user you provided is not linked to any account!"
   Commands:
     Help:
       Description: "Show this help message!"
@@ -129,3 +138,26 @@ Bot:
         Name: "Name"
         IP: "IP Address"
         Date: "Date"
+      
+      ForceLogin:
+        Description: "Force login a user into his account and bypass any login checks!"
+        Args:
+          Player:
+            Name: "player"
+            Description: "The player you want to force login!"
+        Success:
+          Title: "Player has been forced logged in!"
+          Description: "The player has been forced logged in successfully!"
+      
+      ForceLogoutAll:
+        Description: "Force logout all users from their accounts and require them to login again!"
+      
+      ForceUnlink:
+        Description: "Force unlink a user from his account and require him to link his account again!"
+        Args:
+          Player:
+            Name: "player"
+            Description: "The player you want to force login!"
+        Success:
+          Title: "Player has been forced unlinked!"
+          Description: "The player has been forced unlinked successfully!"

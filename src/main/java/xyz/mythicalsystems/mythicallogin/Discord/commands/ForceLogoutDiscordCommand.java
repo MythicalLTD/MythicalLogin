@@ -6,6 +6,7 @@ import org.javacord.api.interaction.SlashCommandInteraction;
 
 import xyz.mythicalsystems.mythicallogin.Config.Config;
 import xyz.mythicalsystems.mythicallogin.Discord.Bot;
+import xyz.mythicalsystems.mythicallogin.Messages.Messages;
 import xyz.mythicalsystems.mythicallogin.MySQL.UserDataHandler;
 
 public class ForceLogoutDiscordCommand extends Bot {
@@ -20,8 +21,8 @@ public class ForceLogoutDiscordCommand extends Bot {
 
                 if (!interaction.getUser().isBotOwnerOrTeamMember()) {
                     EmbedBuilder embed = new EmbedBuilder()
-                            .setTitle("Permission Denied")
-                            .setDescription("You do not have permission to use this command!")
+                            .setTitle(Messages.getMessage().getString("Bot.PermissionDenied.Title"))
+                            .setDescription(Messages.getMessage().getString("Bot.PermissionDenied.Description"))
                             .setColor(java.awt.Color.RED);
                     interaction.createImmediateResponder().addEmbed(embed).respond().thenAccept(message -> {
                         java.util.concurrent.Executors.newSingleThreadScheduledExecutor()

@@ -32,9 +32,9 @@ public class Messages {
             try (InputStream in = MinecraftPlugin.getInstance().getResourceAsStream("messages.yml")) {
                 Files.copy(in, file.toPath());
             } catch (IOException e) {
-                Main.logger.error("Messages", "Failed to create config file");
+                Main.logger.error("Messages", "Failed to create message file");
             } finally {
-                Main.logger.info("Messages", "Config file created");
+                Main.logger.info("Messages", "Message file created");
             }
         }
     }

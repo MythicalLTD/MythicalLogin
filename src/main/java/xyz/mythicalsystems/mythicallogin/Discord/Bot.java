@@ -52,9 +52,9 @@ public class Bot {
         HelpDiscordCommand.register("help", Messages.getMessage().getString("Bot.Commands.Help.Description"));
         LinkDiscordCommand.register("link", Messages.getMessage().getString("Bot.Commands.Link.Description"));
         UnLinkDiscordCommand.register("unlink", Messages.getMessage().getString("Bot.Commands.Unlink.Description"));
-        ForceLoginDiscordCommand.register("forcelogin", "Force login a user!");
-        ForceUnlinkDiscordCommand.register("forceunlink", "Force unlink a user!");
-        ForceLogoutDiscordCommand.register("forcelogoutall", "Force logout all users!");
+        ForceLoginDiscordCommand.register("forcelogin", Messages.getMessage().getString("Bot.Commands.Login.ForceLogin.Description"));
+        ForceUnlinkDiscordCommand.register("forceunlink", Messages.getMessage().getString("Bot.Commands.Login.ForceUnlink.Description"));
+        ForceLogoutDiscordCommand.register("forcelogoutall", Messages.getMessage().getString("Bot.Commands.Login.ForceLogoutAll.Description"));
 
         /**
          * Register events here!

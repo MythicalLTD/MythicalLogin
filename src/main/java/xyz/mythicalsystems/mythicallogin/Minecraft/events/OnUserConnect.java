@@ -33,14 +33,14 @@ public class OnUserConnect implements Listener {
                     String isBlockedString = UserDataHandler.getUserInfo(player, "blocked");
                     String pin = UserDataHandler.generatePin();
 
-                    if (last_ip.equals("forcelogin")) {    
+                    if (last_ip.equals("forcelogin")) {
                         UserDataHandler.setUserInfo(player, "discord_pin", "None");
                         UserDataHandler.setUserInfo(player, "blocked", "false");
                         UserDataHandler.setUserInfo(player, "last_ip", current_ip);
                         sendForceloginMessage(player);
                         return;
                     }
-                    
+
                     String finalMsg = "";
                     List<String> loginRequiredMessage = Messages.getMessage().getStringList("Discord.LoginRequired");
                     for (String message : loginRequiredMessage) {

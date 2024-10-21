@@ -10,6 +10,7 @@ import org.javacord.api.interaction.SlashCommandOptionType;
 
 import xyz.mythicalsystems.mythicallogin.Config.Config;
 import xyz.mythicalsystems.mythicallogin.Discord.Bot;
+import xyz.mythicalsystems.mythicallogin.Messages.Messages;
 import xyz.mythicalsystems.mythicallogin.MySQL.UserDataHandler;
 
 public class ForceUnlinkDiscordCommand extends Bot {
@@ -18,8 +19,10 @@ public class ForceUnlinkDiscordCommand extends Bot {
         SlashCommand command = SlashCommand.with(name, description,
                 Arrays.asList(
                         SlashCommandOption.create(SlashCommandOptionType.USER,
-                                "user",
-                                "The user you want to force unlink", true)))
+                                Messages.getMessage().getString("Bot.Commands.Login.ForceUnlink.Args.Player.Name"),
+                                Messages.getMessage()
+                                        .getString("Bot.Commands.Login.ForceUnlink.Args.Player.Description"),
+                                true)))
                 .createForServer(bot, Config.getSetting().getLong("Discord.guild"))
                 .join();
 
@@ -33,8 +36,8 @@ public class ForceUnlinkDiscordCommand extends Bot {
 
                 if (!interaction.getUser().isBotOwnerOrTeamMember()) {
                     EmbedBuilder embed = new EmbedBuilder()
-                            .setTitle("Permission Denied")
-                            .setDescription("You do not have permission to use this command!")
+                            .setTitle(Messages.getMessage().getString("Bot.PermissionDenied.Title"))
+                            .setDescription(Messages.getMessage().getString("Bot.PermissionDenied.Description"))
                             .setColor(java.awt.Color.RED);
                     interaction.createImmediateResponder().addEmbed(embed).respond().thenAccept(message -> {
                         java.util.concurrent.Executors.newSingleThreadScheduledExecutor()
@@ -45,8 +48,8 @@ public class ForceUnlinkDiscordCommand extends Bot {
 
                 if (userId == "Unknown") {
                     EmbedBuilder embed = new EmbedBuilder()
-                            .setTitle("Invalid User")
-                            .setDescription("The user you provided is invalid!")
+                            .setTitle(Messages.getMessage().getString("Bot.InvalidUser.Title"))
+                            .setDescription(Messages.getMessage().getString("Bot.InvalidUser.Description"))
                             .setColor(java.awt.Color.RED);
                     interaction.createImmediateResponder().addEmbed(embed).respond().thenAccept(message -> {
                         java.util.concurrent.Executors.newSingleThreadScheduledExecutor()
@@ -55,8 +58,8 @@ public class ForceUnlinkDiscordCommand extends Bot {
                 } else {
                     if (!UserDataHandler.isDiscordLinked(userId)) {
                         EmbedBuilder embed = new EmbedBuilder()
-                                .setTitle("Discord Not Linked")
-                                .setDescription("The user you provided is not linked!")
+                                .setTitle(Messages.getMessage().getString("Bot.UserNotLinked.Title"))
+                                .setDescription(Messages.getMessage().getString("Bot.UserNotLinked.Description"))
                                 .setColor(java.awt.Color.RED);
                         interaction.createImmediateResponder().addEmbed(embed).respond().thenAccept(message -> {
                             java.util.concurrent.Executors.newSingleThreadScheduledExecutor()
@@ -67,10 +70,12 @@ public class ForceUnlinkDiscordCommand extends Bot {
                         UserDataHandler.setUserInfo(userId, "discord_id", "None");
                         UserDataHandler.setUserInfo(userId, "blocked", "false");
                         UserDataHandler.setUserInfo(userId, "last_ip", "forcelogin");
-                        
+
                         EmbedBuilder embed = new EmbedBuilder()
-                                .setTitle("Force Login Success")
-                                .setDescription("The user has been force unlinked!")
+                                .setTitle(
+                                        Messages.getMessage().getString("Bot.Commands.Login.ForceUnlink.Success.Title"))
+                                .setDescription(Messages.getMessage()
+                                        .getString("Bot.Commands.Login.ForceUnlink.Success.Description"))
                                 .setColor(java.awt.Color.GREEN);
                         interaction.createImmediateResponder().addEmbed(embed).respond().thenAccept(message -> {
                             java.util.concurrent.Executors.newSingleThreadScheduledExecutor()

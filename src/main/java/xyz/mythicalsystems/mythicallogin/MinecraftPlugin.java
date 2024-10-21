@@ -1,10 +1,12 @@
 package xyz.mythicalsystems.mythicallogin;
 
+import org.json.JSONObject;
+
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.api.scheduler.TaskScheduler;
+import xyz.mythicalsystems.mythicallogin.Config.Config;
 import xyz.mythicalsystems.mythicallogin.Metrics.BStats;
-
 
 public final class MinecraftPlugin extends Plugin {
     /**
@@ -70,6 +72,7 @@ public final class MinecraftPlugin extends Plugin {
             getLogger().info("OS Architecture: " + OS_ARCH);
             getLogger().info("");
             getLogger().info("-------------------------------------");
+            checkLicense();
         } catch (Exception e) {
             getLogger().info("Error getting plugin information");
         }
@@ -106,5 +109,77 @@ public final class MinecraftPlugin extends Plugin {
      */
     public static MinecraftPlugin getInstance() {
         return instance;
+    }
+
+    /**
+     * License Server
+     */
+    @SuppressWarnings("null")
+    public static void checkLicense() {
+        String licenseString = Config.getSetting().getString("PinLogin.LicenseKey");
+        if (licenseString == null || licenseString.isEmpty()) {
+            Main.logger.error(Main.class.getName(), "License is not set, stopping the plugin");
+            MinecraftPlugin.getInstance().getProxy().stop();
+        }
+        if (licenseString.length() != 36) {
+            Main.logger.error(Main.class.getName(), "Invalid license key length, stopping the plugin");
+            MinecraftPlugin.getInstance().getProxy().stop();
+        }
+        String url = "https://api.mythical.systems/mythicallogin/license/" + licenseString + "/info";
+
+        try {
+            java.net.InetAddress address = java.net.InetAddress.getByName(new java.net.URL(url).getHost());
+            if (!address.isReachable(5000)) {
+                Main.logger.error(Main.class.getName(), "License server is offline, still allowing plugin to start");
+            }
+        } catch (Exception e) {
+            Main.logger.error(Main.class.getName(),
+                    "Failed to check if license server is reachable: " + e.getMessage());
+        }
+
+        int maxRetries = 3;
+        int attempts = 0;
+        boolean licenseValid = false;
+
+        while (attempts < maxRetries && !licenseValid) {
+            try {
+                java.net.URL urlObj = new java.net.URL(url);
+                java.net.HttpURLConnection conn = (java.net.HttpURLConnection) urlObj.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Accept", "application/json");
+
+                if (conn.getResponseCode() != 200) {
+                    throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+                }
+
+                java.io.BufferedReader br = new java.io.BufferedReader(
+                        new java.io.InputStreamReader((conn.getInputStream())));
+                StringBuilder sb = new StringBuilder();
+                String output;
+                while ((output = br.readLine()) != null) {
+                    sb.append(output);
+                }
+
+                conn.disconnect();
+
+                JSONObject jsonResponse = new JSONObject(sb.toString());
+                boolean success = jsonResponse.getBoolean("success");
+                if (!success) {
+                    throw new RuntimeException("License check failed: " + jsonResponse.getString("message"));
+                }
+
+                licenseValid = true;
+            } catch (Exception e) {
+                attempts++;
+                if (attempts >= maxRetries) {
+                    Main.logger.error(Main.class.getName(),
+                            "Failed to check license after " + maxRetries + " attempts: " + e.getMessage());
+                    MinecraftPlugin.getInstance().getProxy().stop();
+                } else {
+                    Main.logger.warn(Main.class.getName(),
+                            "License check attempt " + attempts + " failed: " + e.getMessage());
+                }
+            }
+        }
     }
 }

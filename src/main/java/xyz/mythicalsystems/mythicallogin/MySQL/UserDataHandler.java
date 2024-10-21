@@ -8,6 +8,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.sql.*;
 import xyz.mythicalsystems.mythicallogin.Main;
+import xyz.mythicalsystems.mythicallogin.Config.Config;
 import xyz.mythicalsystems.mythicallogin.Messages.Messages;
 
 public class UserDataHandler {
@@ -381,7 +382,17 @@ public class UserDataHandler {
      * @return
      */
     public static String generatePin() {
-        return String.valueOf((int) ((Math.random() * 9000) + 1000));
+        int length = Config.getSetting().getInt("PinLogin.Length");
+        if (Main.CONFIG_DEBUG_ENABLED) {
+            Main.logger.info(UserDataHandler.class.getName(),
+                    "(DEBUG) Generating a pin with a length of " + length);
+        }
+        StringBuilder pin = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            pin.append((int) (Math.random() * 10));
+        }
+        
+        return pin.toString();
     }
 
     /**
